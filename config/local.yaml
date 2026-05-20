@@ -1,0 +1,9 @@
+http_server:
+  address: "localhost:8080"
+
+database:
+  user: "hitalent"
+  password: "hitalent"
+  host: "localhost"
+  port: 5432
+  name: "hitalent"
