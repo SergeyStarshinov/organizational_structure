@@ -1,15 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"orgstructure/internal/config"
+	"orgstructure/internal/logger"
 )
 
 func main() {
 	cfg := config.New()
-	fmt.Println(cfg)
-
-	// TODO: init logger
+	log := logger.New(cfg.Logger)
+	log.Debug("logger initialization complete")
 
 	// TODO: connect DB: postgreSQL
 

@@ -7,3 +7,7 @@ database:
   host: "localhost"
   port: 5432
   name: "hitalent"
+
+logger:
+  logfile: "log.txt" # filename or "stdout"
+  loglevel: "debug"  # debug, warn, info, error

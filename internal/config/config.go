@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Server   ServerConfig `yaml:"http_server"`
 	Database DBConfig     `yaml:"database"`
+	Logger   LogConfig    `yaml:"logger"`
 }
 
 type DBConfig struct {
@@ -24,6 +25,11 @@ type ServerConfig struct {
 	Address string `yaml:"address"`
 }
 
+type LogConfig struct {
+	LogFile  string `yaml:"logfile"`
+	LogLevel string `yaml:"loglevel"`
+}
+
 func New() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
@@ -36,7 +42,7 @@ func New() *Config {
 
 	var cfg Config
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
-		log.Fatalf("cannot read config: %s", err)
+		log.Fatalf("can't read config: %s", err)
 	}
 
 	return &cfg
