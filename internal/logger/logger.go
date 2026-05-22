@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func New(logConfig config.LogConfig) *slog.Logger {
+func New(logConfig config.LogConfig) (*slog.Logger, *os.File) {
 	var logFile *os.File
 	if logConfig.LogFile == "stdout" {
 		logFile = os.Stdout
@@ -33,5 +33,12 @@ func New(logConfig config.LogConfig) *slog.Logger {
 		log.Fatal("incorrect log level")
 	}
 
-	return slog.New(slog.NewTextHandler(logFile, &slog.HandlerOptions{Level: logLevel}))
+	return slog.New(slog.NewTextHandler(logFile, &slog.HandlerOptions{Level: logLevel})), logFile
+}
+
+func Err(err error) slog.Attr {
+	return slog.Attr{
+		Key:   "error",
+		Value: slog.StringValue(err.Error()),
+	}
 }
