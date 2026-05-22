@@ -1,19 +1,23 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Department struct {
-	ID        int    `gorm:"primaryKey;autoIncrement"`
-	Name      string `gorm:"size:200;not null"`
-	ParentID  *int
-	CreatedAt time.Time
+	ID          int    `gorm:"primaryKey;autoIncrement"`
+	Name        string `gorm:"size:200;not null"`
+	ParentID    *int   `gorm:"foreignKey:ID"`
+	CreatedAt   time.Time
+	Employees   []Employee   `gorm:"foreignKey:DepartmentID"`
+	Departments []Department `gorm:"foreignKey:ParentID"`
 }
 
 type Employee struct {
 	ID           int `gorm:"primaryKey;autoIncrement"`
 	DepartmentID int
-	FullName     string `gorm:"size:200;not null"`
-	Position     string `gorm:"size:200;not null"`
-	Hired_at     *string
+	FullName     string     `gorm:"size:200;not null"`
+	Position     string     `gorm:"size:200;not null"`
+	Hired_at     *time.Time `gorm:"type:date"`
 	CreatedAt    time.Time
 }
