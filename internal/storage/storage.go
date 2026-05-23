@@ -47,18 +47,13 @@ func (s Storage) CreateEmployee(e model.Employee) (model.Employee, error) {
 }
 
 func (s Storage) GetDepartment(id int) (model.Department, error) {
-	// s.DB.Find("id")
-	// query := `SELECT id, name
-	// 	FROM departments WHERE id=@id`
-	// args := pgx.NamedArgs{
-	// 	"id": id,
-	// }
-	// queryRow := r.store.Data.QueryRow(context.Background(), query, args)
+	var d model.Department
+	result := s.DB.First(&d, id)
+	return d, result.Error
+}
 
-	// var department model.Department
-	// err := queryRow.Scan(&department.ID, &department.name)
-	// if errors.Is(err, pgx.ErrNoRows) {
-	// 	return playerDTO, fmt.Errorf("department with id %s not found", id)
-	// }
-	return model.Department{}, nil
+func (s Storage) GetChildren(id int) []model.Department {
+	var children []model.Department
+	s.DB.Where("parent_id = ?", id).Find(&children)
+	return children
 }

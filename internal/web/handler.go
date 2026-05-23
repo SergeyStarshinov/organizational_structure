@@ -16,6 +16,7 @@ type Repository interface {
 	CreateDepartment(d model.Department) (model.Department, error)
 	CreateEmployee(e model.Employee) (model.Employee, error)
 	GetDepartment(id int) (model.Department, error)
+	GetChildren(id int) []model.Department
 }
 
 type BaseHandler struct {
@@ -38,32 +39,48 @@ func NewBaseHandler(r Repository, l *slog.Logger) BaseHandler {
 	return BaseHandler{data: r, log: l}
 }
 
-// func (h BaseHandler) GetDepartment(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	idString := r.PathValue("id")
-// 	id, err := strconv.Atoi(strings.TrimSpace(idString))
-// 	if err != nil {
-// 		http.Error(w, "incorrect department id, must be a number", http.StatusBadRequest)
-// 		h.log.Error("web.GetDepartment, id isn't a number:", logger.Err(err))
-// 		return
-// 	}
-// 	department, err := h.data.GetDepartment(id)
-// 	if err != nil {
-// 		http.Error(w, "department with id, must be a number", http.StatusBadRequest)
-// 		h.log.Error("web.GetDepartment, invalid id:", logger.Err(err))
-// 		return
-// 	}
-// 	departmentInfo, _ := json.Marshal(department)
-// 	w.Write([]byte(departmentInfo))
-// }
+func (h BaseHandler) GetDepartment(w http.ResponseWriter, r *http.Request) {
+	h.log.Debug("start web.GetDepartment")
+	w.Header().Set("Content-Type", "application/json")
+	idString := r.PathValue("id")
+	id, err := strconv.Atoi(strings.TrimSpace(idString))
+	if err != nil {
+		http.Error(w, "incorrect department id, must be a number", http.StatusBadRequest)
+		h.log.Error("web.GetDepartment, id isn't a number:", logger.Err(err))
+		return
+	}
+	// TODO: add depth and include_employee check
+	department, err := h.data.GetDepartment(id)
+	if err != nil {
+		http.Error(w, "invalid department id", http.StatusBadRequest)
+		h.log.Error("web.GetDepartment, invalid id:", logger.Err(err))
+		return
+	}
+	department.Children = h.data.GetChildren(department.ID)
+	h.log.Info(fmt.Sprintf("information about department with ID = %d was received", department.ID))
+	departmentInfo, _ := json.Marshal(department)
+	w.Write([]byte(departmentInfo))
+}
 
 func (h BaseHandler) CreateDepartment(w http.ResponseWriter, r *http.Request) {
+	h.log.Debug("start web.CreateDepartment")
 	w.Header().Set("Content-Type", "application/json")
 	var req departmentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		h.log.Error("web.CreateDepartment, invalid request body:", logger.Err(err))
 		return
+	}
+	req.Name = strings.TrimSpace(req.Name)
+
+	siblings := h.data.GetChildren(req.Parent_id)
+	for _, s := range siblings {
+		if s.Name == req.Name {
+			http.Error(w, "invalid request body: duplicate name of department", http.StatusBadRequest)
+			h.log.Error(fmt.Sprintf("web.CreateDepartment, duplicate name %s for parent_id %d:",
+				req.Name, req.Parent_id))
+			return
+		}
 	}
 
 	var newDepartment model.Department
@@ -86,6 +103,7 @@ func (h BaseHandler) CreateDepartment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h BaseHandler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
+	h.log.Debug("start web.CreateEmployee")
 	w.Header().Set("Content-Type", "application/json")
 	idString := r.PathValue("id")
 	departmentID, err := strconv.Atoi(strings.TrimSpace(idString))
@@ -112,8 +130,8 @@ func (h BaseHandler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		newEmployee.Hired_at = &hiredDate
 	}
 	newEmployee.DepartmentID = departmentID
-	newEmployee.FullName = req.Full_name
-	newEmployee.Position = req.Position
+	newEmployee.FullName = strings.TrimSpace(req.Full_name)
+	newEmployee.Position = strings.TrimSpace(req.Position)
 	newEmployee.CreatedAt = time.Now()
 	newEmployee, err = h.data.CreateEmployee(newEmployee)
 	if err != nil {
