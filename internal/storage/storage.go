@@ -54,7 +54,11 @@ func (s Storage) GetDepartment(id int) (model.Department, error) {
 
 func (s Storage) GetChildren(id int) []model.Department {
 	var children []model.Department
-	s.DB.Where("parent_id = ?", id).Find(&children)
+	if id != 0 {
+		s.DB.Where("parent_id = ?", id).Find(&children)
+	} else {
+		s.DB.Where("parent_id IS NULL").Find(&children)
+	}
 	return children
 }
 
