@@ -26,8 +26,6 @@ func main() {
 	}()
 	log.Debug("connection to the database is established")
 
-	// TODO: migrations: goose
-
 	handler := web.NewBaseHandler(repo, log)
 	mux := web.CreateMux(handler)
 
@@ -36,5 +34,6 @@ func main() {
 		Handler: mux,
 	}
 	server.ListenAndServe()
+	log.Info("server started")
 
 }

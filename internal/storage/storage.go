@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"orgstructure/internal/config"
 	"orgstructure/internal/domain/model"
+	"orgstructure/migrations"
 
+	"github.com/pressly/goose"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -24,12 +26,25 @@ func New(cfg *config.Config) (*Storage, error) {
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("storage.New: %w", err)
+		return nil, fmt.Errorf("storage.New, connection: %w", err)
 	}
 
-	err = db.AutoMigrate(&model.Department{}, &model.Employee{})
+	dbInstance, _ := db.DB()
+
+	migrations.Employees()
+	migrations.Departments()
+	migrations.EmployeesFK()
+
+	if cfg.Database.Reload {
+		err = goose.DownTo(dbInstance, ".", 0)
+		if err != nil {
+			return nil, fmt.Errorf("storage.New, reload: %w", err)
+		}
+	}
+
+	err = goose.Up(dbInstance, ".")
 	if err != nil {
-		return nil, fmt.Errorf("storage.New, migrate: %w", err)
+		return nil, fmt.Errorf("storage.New, migration: %w", err)
 	}
 
 	storage.DB = db

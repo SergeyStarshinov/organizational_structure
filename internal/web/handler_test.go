@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"orgstructure/internal/config"
@@ -30,6 +31,7 @@ func TestCreateDepartment(t *testing.T) {
 			Host:     "localhost",
 			Port:     5432,
 			DBName:   "hitalent",
+			Reload:   false,
 		},
 		Logger: config.LogConfig{
 			LogFile:  "stdout",
@@ -56,6 +58,7 @@ func TestCreateDepartment(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "/departments/", bytes.NewReader([]byte(test.body)))
 		require.NoError(t, err)
 		handler.CreateDepartment(rr, req)
+		log.Debug(fmt.Sprintf("%s -> rr.Code %d, test.status %d", test.body, rr.Code, test.status))
 		assert.Equal(t, rr.Code, test.status)
 	}
 

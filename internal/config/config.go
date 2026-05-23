@@ -19,6 +19,7 @@ type DBConfig struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	DBName   string `yaml:"name"`
+	Reload   bool   `yaml:"reload"`
 }
 
 type ServerConfig struct {

@@ -18,6 +18,6 @@ type Employee struct {
 	DepartmentID int
 	FullName     string     `gorm:"size:200;not null"`
 	Position     string     `gorm:"size:200;not null"`
-	Hired_at     *time.Time `gorm:"type:date"`
+	HiredAt      *time.Time `gorm:"type:date"`
 	CreatedAt    time.Time
 }

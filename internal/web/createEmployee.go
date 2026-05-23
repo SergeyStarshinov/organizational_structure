@@ -45,7 +45,7 @@ func (h BaseHandler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 			h.log.Error("web.CreateEmployee, invalid date format:", logger.Err(err))
 			return
 		}
-		newEmployee.Hired_at = &hiredDate
+		newEmployee.HiredAt = &hiredDate
 	}
 	newEmployee.DepartmentID = departmentID
 	newEmployee.FullName = strings.TrimSpace(req.Full_name)
@@ -58,7 +58,7 @@ func (h BaseHandler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.log.Info(fmt.Sprintf("new employee created. id %d, department id: %d, fullname: %s, position %s, hired at %v",
-		newEmployee.ID, newEmployee.DepartmentID, newEmployee.FullName, newEmployee.Position, newEmployee.Hired_at))
+		newEmployee.ID, newEmployee.DepartmentID, newEmployee.FullName, newEmployee.Position, newEmployee.HiredAt))
 	employeeInfo, _ := json.Marshal(newEmployee)
 	w.Write([]byte(employeeInfo))
 }
