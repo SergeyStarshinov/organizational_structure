@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Repository interface {
@@ -17,6 +20,7 @@ type Repository interface {
 	CreateEmployee(e model.Employee) (model.Employee, error)
 	GetDepartment(id int) (model.Department, error)
 	GetChildren(id int) []model.Department
+	GetEmployees(id int) []model.Employee
 }
 
 type BaseHandler struct {
@@ -105,13 +109,19 @@ func (h BaseHandler) CreateDepartment(w http.ResponseWriter, r *http.Request) {
 func (h BaseHandler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("start web.CreateEmployee")
 	w.Header().Set("Content-Type", "application/json")
-	idString := r.PathValue("id")
-	departmentID, err := strconv.Atoi(strings.TrimSpace(idString))
+	idString := strings.TrimSpace(r.PathValue("id"))
+	departmentID, err := strconv.Atoi(idString)
 	if err != nil {
 		http.Error(w, "incorrect department id, must be a number", http.StatusBadRequest)
 		h.log.Error("web.CreateEmployee, department id isn't a number:", logger.Err(err))
 		return
 	}
+	if _, err := h.data.GetDepartment(departmentID); errors.Is(err, gorm.ErrRecordNotFound) {
+		http.Error(w, "invalid department id", http.StatusNotFound)
+		h.log.Error("web.CreateEmployee, invalid department id: "+idString, logger.Err(err))
+		return
+	}
+
 	var req employeeRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)

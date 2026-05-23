@@ -57,3 +57,9 @@ func (s Storage) GetChildren(id int) []model.Department {
 	s.DB.Where("parent_id = ?", id).Find(&children)
 	return children
 }
+
+func (s Storage) GetEmployees(id int) []model.Employee {
+	var employees []model.Employee
+	s.DB.Where("department_id = ?", id).Find(&employees)
+	return employees
+}
