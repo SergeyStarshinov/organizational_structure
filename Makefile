@@ -6,4 +6,4 @@ run:
 
 .PHONY: test
 test:
-	go test ./test
+	go test ./internal/web
