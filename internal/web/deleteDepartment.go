@@ -47,7 +47,7 @@ func (h BaseHandler) DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if children := h.data.GetChildren(sourceID); len(children) != 0 {
-			http.Error(w, "cannot delete: the department has children", http.StatusBadRequest)
+			http.Error(w, "cannot delete: the department has children", http.StatusConflict)
 			h.log.Error("web.DeleteDepartment, department " + idString + " has children")
 			return
 		}

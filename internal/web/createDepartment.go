@@ -22,7 +22,7 @@ func (h BaseHandler) CreateDepartment(w http.ResponseWriter, r *http.Request) {
 	req.Name = strings.TrimSpace(req.Name)
 
 	if !h.siblingsCheck(req.Parent_id, req.Name) {
-		http.Error(w, "invalid request body: duplicate name of department", http.StatusBadRequest)
+		http.Error(w, "invalid request body: duplicate name of department", http.StatusConflict)
 		h.log.Error(fmt.Sprintf("web.CreateDepartment, duplicate name %s for parent_id %d:",
 			req.Name, req.Parent_id))
 		return
