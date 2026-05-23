@@ -12,6 +12,8 @@ type Repository interface {
 	GetChildren(id int) []model.Department
 	GetEmployees(id int) []model.Employee
 	UpdateDepartment(d model.Department) (model.Department, error)
+	DeleteDepartment(d model.Department)
+	MoveEmployees(sourceID, destID int)
 }
 
 type BaseHandler struct {

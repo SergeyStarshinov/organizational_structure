@@ -72,3 +72,11 @@ func (s Storage) UpdateDepartment(d model.Department) (model.Department, error) 
 	result := s.DB.Save(&d)
 	return d, result.Error
 }
+
+func (s Storage) DeleteDepartment(d model.Department) {
+	s.DB.Delete(&d)
+}
+
+func (s Storage) MoveEmployees(sourceID, destID int) {
+	s.DB.Table("employees").Where("department_id = ?", sourceID).Update("department_id", destID)
+}

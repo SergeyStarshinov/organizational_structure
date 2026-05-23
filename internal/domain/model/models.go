@@ -9,8 +9,8 @@ type Department struct {
 	Name      string `gorm:"size:200;not null"`
 	ParentID  *int   `gorm:"foreignKey:ID;check:parent_id <> id"`
 	CreatedAt time.Time
-	Employees []Employee   `gorm:"foreignKey:DepartmentID"`
-	Children  []Department `gorm:"foreignKey:ParentID"`
+	Employees []Employee   `gorm:"foreignKey:DepartmentID;constraint:OnDelete:CASCADE"`
+	Children  []Department `gorm:"foreignKey:ParentID;constraint:OnDelete:CASCADE"`
 }
 
 type Employee struct {
