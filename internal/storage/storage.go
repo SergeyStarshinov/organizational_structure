@@ -60,6 +60,6 @@ func (s Storage) GetChildren(id int) []model.Department {
 
 func (s Storage) GetEmployees(id int) []model.Employee {
 	var employees []model.Employee
-	s.DB.Where("department_id = ?", id).Find(&employees)
+	s.DB.Order("full_name").Where("department_id = ?", id).Find(&employees)
 	return employees
 }
