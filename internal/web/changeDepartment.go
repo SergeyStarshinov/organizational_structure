@@ -69,7 +69,7 @@ func (h BaseHandler) ChangeDepartment(w http.ResponseWriter, r *http.Request) {
 
 		if !h.ancestryCheck(department.ID, newParentID) {
 			http.Error(w, "incorrect parent_id: cannot move the department inside its subtree",
-				http.StatusBadRequest)
+				http.StatusConflict)
 			h.log.Error(fmt.Sprintf("web.ChangeDepartment, department %d is an ancestor for %d",
 				department.ID, newParentID))
 			return
