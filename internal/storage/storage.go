@@ -67,3 +67,8 @@ func (s Storage) GetEmployees(id int) []model.Employee {
 	s.DB.Order("full_name").Where("department_id = ?", id).Find(&employees)
 	return employees
 }
+
+func (s Storage) UpdateDepartment(d model.Department) (model.Department, error) {
+	result := s.DB.Save(&d)
+	return d, result.Error
+}
