@@ -2,7 +2,8 @@ export CONFIG_PATH=./config/local.yaml
 
 .PHONY: run
 run: 
-	go run ./cmd/main.go
+	docker pull postgres:latest
+	docker compose up -d
 
 .PHONY: test
 test:

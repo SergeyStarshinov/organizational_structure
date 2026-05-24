@@ -28,7 +28,7 @@ func TestCreateDepartment(t *testing.T) {
 		Database: config.DBConfig{
 			User:     "hitalent",
 			Password: "hitalent",
-			Host:     "localhost",
+			Host:     "0.0.0.0",
 			Port:     5432,
 			DBName:   "hitalent",
 			Reload:   false,
