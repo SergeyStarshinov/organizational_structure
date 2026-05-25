@@ -1,0 +1,14 @@
+http_server:
+  address: "0.0.0.0:8080"
+
+database:
+  user: "hitalent"
+  password: "hitalent"
+  host: "db"
+  port: 5432
+  name: "hitalent"
+  reload: true
+
+logger:
+  logfile: "log.txt" # filename or "stdout"
+  loglevel: "debug"  # debug, warn, info, error
